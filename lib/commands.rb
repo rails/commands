@@ -74,13 +74,3 @@ end
 
 require 'rails/console/app'
 Rails::ConsoleMethods.send :include, Commands::ConsoleMethods
-
-# class Rails::Console
-#   def start_with_commands
-#     console::ExtendCommandBundle.send :include, Commands::ConsoleMethods
-#     start_without_commands
-#   end
-# 
-#   alias_method_chain :start, :commands
-# end
-# 
