@@ -20,9 +20,9 @@ Usage
 
 When your console boots, it'll automatically have a `commands` object instantiated (aliased to `c`). The following methods are delegated to this object: rake, test, generate, destroy, update. It's used like this:
 
-   > generate "scaffold post title:string"
-   > rake "db:migrate"
-   > test "models/person"
+    > generate "scaffold post title:string"
+    > rake "db:migrate"
+    > test "models/person"
 
 
 Work needed
