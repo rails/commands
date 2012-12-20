@@ -9,10 +9,11 @@ Usage
 
 When your console boots, it'll automatically have a commands object instantiated (aliased to c). It can be used like this:
 
+```
   c.generate "scaffold post title:string"
   c.rake "db:migrate"
   c.test "models/person"
-
+```
 
 Work needed
 -----------
