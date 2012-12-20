@@ -4,6 +4,17 @@ Commands
 Let you run Rake and Rails commands during a console session. This side-steps the need to load the entire environment over and over again when you run these commands from the shell. This constant reloading of the environment is what causes slow boot time on big applications. Think of this like a baby Zeus or the Turbolinks of commands.
 
 
+Installation
+------------
+
+Add this line to your application's Gemfile:
+
+    gem 'commands'
+
+And then execute:
+
+    $ bundle
+
 Usage
 -----
 
