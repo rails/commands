@@ -18,13 +18,12 @@ And then execute:
 Usage
 -----
 
-When your console boots, it'll automatically have a commands object instantiated (aliased to c). It can be used like this:
+When your console boots, it'll automatically have a `commands` object instantiated (aliased to `c`). The following methods are delegated to this object: rake, test, generate, destroy, update. It's used like this:
 
-```
-  c.generate "scaffold post title:string"
-  c.rake "db:migrate"
-  c.test "models/person"
-```
+   > generate "scaffold post title:string"
+   > rake "db:migrate"
+   > test "models/person"
+
 
 Work needed
 -----------

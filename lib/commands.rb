@@ -7,6 +7,8 @@ class Commands
     end
     
     alias_method :c, :commands
+    
+    delegate :rake, :test, :generate, :destroy, :update, to: :commands
   end
 
   include Rake::DSL
