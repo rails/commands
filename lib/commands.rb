@@ -18,7 +18,7 @@ class Commands
   end
   
   def rake(task, *args)
-    ActiveRecord::Base.logger.silence do
+    silencer do
       Rake::Task[task].invoke(*args)
       
       # Rake by default only allows tasks to be run once per session
@@ -30,7 +30,7 @@ class Commands
   # FIXME: Turn this into calls directly to the test classes, so we don't have to load environment again.
   # Also need to toggle the environment to test and back to dev after running.
   def test(what = nil)
-    ActiveRecord::Base.logger.silence do
+    silencer do
       case what
       when NilClass, :all
         rake "test:units"
@@ -71,6 +71,14 @@ class Commands
       end
 
       nil
+    end
+
+    def silencer &block
+      if defined? ActiveRecord::Base
+        ActiveRecord::Base.logger.silence &block
+      else
+        yield
+      end
     end
 end
 
