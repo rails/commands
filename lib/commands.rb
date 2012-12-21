@@ -18,15 +18,15 @@ class Commands
   end
   
   def rake(task, *args)
-    silence_logger { Rake::Task[task].invoke(*args) }
-      
+    silence_active_record_logger { Rake::Task[task].invoke(*args) }
+
     # Rake by default only allows tasks to be run once per session
     Rake.application.tasks.each(&:reenable)
 
-    nil
+    "Completed"
   rescue SystemExit
     # Swallow exit/abort calls as we'll never want to exit the IRB session
-    nil
+    "Failed"
   end
 
   # FIXME: Turn this into calls directly to the test classes, so we don't have to load environment again.
@@ -66,15 +66,16 @@ class Commands
         ARGV.replace [nil]
       end
 
-      nil
+      "Completed"
     end
     
     # Only just ensured that this method is available in rails/master, so need a guard for a bit.
-    def silence_logger
-      if ActiveRecord::Base.logger.respond_to? :silence
-        ActiveRecord::Base.logger.silence { yield }
-      else
+    def silence_active_record_logger
+      begin
+        old_logger_level, ActiveRecord::Base.logger.level = ActiveRecord::Base.logger.level, Logger::ERROR
         yield
+      ensure
+        ActiveRecord::Base.logger.level = old_logger_level
       end
     end
 end
