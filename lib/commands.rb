@@ -13,15 +13,12 @@ class Commands
   include Rake::DSL
   
   def initialize
-    load Rails.root.join('Rakefile')
-    Rails.application.load_generators
+    load_rake_tasks
+    load_rails_generators
   end
   
-  def rake(task, *args)
-    silence_active_record_logger { Rake::Task[task].invoke(*args) }
-
-    # Rake by default only allows tasks to be run once per session
-    Rake.application.tasks.each(&:reenable)
+  def rake(task = nil, *args)
+    task.nil? ? print_rake_tasks : invoke_rake_task(task, *args)
 
     "Completed"
   rescue SystemExit
@@ -56,6 +53,28 @@ class Commands
   
   
   private
+    def load_rake_tasks
+      Rake::TaskManager.record_task_metadata = true # needed to capture 
+      load Rails.root.join('Rakefile')
+    end
+    
+    def load_rails_generators
+      Rails.application.load_generators
+    end
+
+
+    def print_rake_tasks
+      Rake.application.options.show_tasks = :tasks
+      Rake.application.options.show_task_pattern = Regexp.new('')
+      Rake.application.display_tasks_and_comments
+    end
+
+    def invoke_rake_task(task, *args)
+      silence_active_record_logger { Rake::Task[task].invoke(*args) }
+      Rake.application.tasks.each(&:reenable) # Rake by default only allows tasks to be run once per session
+    end
+
+  
     def generator(name, argv = nil)
       if argv.nil?
         # FIXME: I don't know why we can't just catch SystemExit here, then we wouldn't need this if block
