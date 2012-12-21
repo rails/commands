@@ -1,3 +1,4 @@
+if defined?(Rails)
 require 'rake'
 require 'rails/generators'
 
@@ -81,3 +82,4 @@ end
 
 require 'rails/console/app'
 Rails::ConsoleMethods.send :include, Commands::ConsoleMethods
+end
