@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name    = 'commands'
-  s.version = '0.0.3'
+  s.version = '0.0.4'
   s.author  = 'David Heinemeier Hansson'
   s.email   = 'david@37signals.com'
   s.summary = 'Run Rake/Rails commands through the console'
