@@ -29,16 +29,20 @@ class Commands
   end
 
   # FIXME: Turn this into calls directly to the test classes, so we don't have to load environment again.
-  # Also need to toggle the environment to test and back to dev after running.
   def test(what = nil)
     ActiveRecord::Base.logger.silence do
       case what
       when NilClass, :all
         rake "test:units"
       when String
-        ENV['TEST'] = "test/#{what}_test.rb"
-        rake "test:single"
-        ENV['TEST'] = nil
+        begin
+          old_env, ENV["RAILS_ENV"] = ENV["RAILS_ENV"], "test"
+          ENV['TEST'] = "test/#{what}_test.rb"
+          rake "test:single"
+        ensure
+          ENV['TEST'] = nil
+          ENV["RAILS_ENV"] = old_env
+        end
       end
     end
     nil
