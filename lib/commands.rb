@@ -18,7 +18,7 @@ class Commands
   end
   
   def rake(task, *args)
-    ActiveRecord::Base.logger.silence { Rake::Task[task].invoke(*args) }
+    silence_logger { Rake::Task[task].invoke(*args) }
       
     # Rake by default only allows tasks to be run once per session
     Rake.application.tasks.each(&:reenable)
@@ -67,6 +67,15 @@ class Commands
       end
 
       nil
+    end
+    
+    # Only just ensured that this method is available in rails/master, so need a guard for a bit.
+    def silence_logger
+      if ActiveRecord::Base.logger.respond_to? :silence
+        ActiveRecord::Base.logger.silence { yield }
+      else
+        yield
+      end
     end
 end
 
