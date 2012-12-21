@@ -15,6 +15,7 @@ class Commands
   
   def initialize
     load Rails.root.join('Rakefile')
+    Rails.application.load_generators
   end
   
   def rake(task, *args)
