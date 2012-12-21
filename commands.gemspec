@@ -6,6 +6,7 @@ Gem::Specification.new do |s|
   s.summary = 'Run Rake/Rails commands through the console'
 
   s.add_dependency 'rails', '>= 3.0.0'
+  s.add_dependency 'm', '~> 1.3'
 
   s.files = Dir["#{File.dirname(__FILE__)}/**/*"]
 end

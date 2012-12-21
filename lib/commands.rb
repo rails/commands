@@ -6,17 +6,17 @@ class Commands
     def commands
       @commands ||= Commands.new
     end
-    
+
     delegate :rake, :test, :generate, :destroy, :update, to: :commands
   end
 
   include Rake::DSL
-  
+
   def initialize
     load_rake_tasks
     load_rails_generators
   end
-  
+
   def rake(task = nil, *args)
     task.nil? ? print_rake_tasks : invoke_rake_task(task, *args)
     "Completed"
@@ -27,47 +27,50 @@ class Commands
   # FIXME: Turn this into calls directly to the test classes, so we don't have to load environment again.
   # Also need to toggle the environment to test and back to dev after running.
   def test(what = nil)
-    forking do
-      case what
-      when NilClass
-        print_test_usage
-      when "all"
-        rake "test"
-      when /^[^\/]+$/ # models
-        rake "test:#{what}"
-      when /[\/]+/ # models/person
-        ENV['TEST'] = "test/#{what}_test.rb"
-        rake "test:single"
-        ENV['TEST'] = nil
+    require 'm'
+
+    args = if what
+      directory = File.join("test", what)
+
+      if File.directory?(directory)
+        [directory]
+      else
+        path, line_number = directory.split(":")
+        file = "#{path}_test.rb"
+        file << ":#{line_number}" if line_number
+        [file]
       end
+    else
+      []
     end
 
-    "Completed"
+    forking do
+      M::Runner.new(args).run
+    end
   end
 
   def generate(argv = nil)
     generator :generate, argv
   end
-  
+
   def update(argv = nil)
     generator :update, argv
   end
-  
+
   def destroy(argv = nil)
     generator :destroy, argv
   end
-  
-  
+
+
   private
     def load_rake_tasks
       Rake::TaskManager.record_task_metadata = true # needed to capture comments from define_task
       load Rails.root.join('Rakefile')
     end
-    
+
     def load_rails_generators
       Rails.application.load_generators
     end
-
 
     def print_rake_tasks
       Rake.application.options.show_tasks = :tasks
@@ -80,30 +83,14 @@ class Commands
       Rake.application.tasks.each(&:reenable) # Rake by default only allows tasks to be run once per session
     end
 
-
-    def print_test_usage
-      puts <<-EOT
-Usage:
-  test "WHAT"
-
-Description:
-    Runs either a full set of test suites or single suite.
-    
-    If you supply WHAT with either models, controllers, helpers, integration, or performance,
-    those whole sets will be run.
-    
-    If you supply WHAT with models/person, just test/models/person_test.rb will be run.
-EOT
-    end
-
     def forking
       pid = Kernel.fork do
         yield
         Kernel.exit
       end
       Process.wait pid
+      true
     end
-
 
     def generator(name, argv = nil)
       if argv.nil?
@@ -117,7 +104,7 @@ EOT
 
       "Completed"
     end
-    
+
     # Only just ensured that this method is available in rails/master, so need a guard for a bit.
     def silence_active_record_logger
       begin
