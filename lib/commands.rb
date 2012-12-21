@@ -27,19 +27,22 @@ class Commands
   # FIXME: Turn this into calls directly to the test classes, so we don't have to load environment again.
   # Also need to toggle the environment to test and back to dev after running.
   def test(what = nil)
-    case what
-    when NilClass
-      print_test_usage
-      "Completed"
-    when "all"
-      rake "test"
-    when /^[^\/]+$/ # models
-      rake "test:#{what}"
-    when /[\/]+/ # models/person
-      ENV['TEST'] = "test/#{what}_test.rb"
-      rake "test:single"
-      ENV['TEST'] = nil
+    forking do
+      case what
+      when NilClass
+        print_test_usage
+      when "all"
+        rake "test"
+      when /^[^\/]+$/ # models
+        rake "test:#{what}"
+      when /[\/]+/ # models/person
+        ENV['TEST'] = "test/#{what}_test.rb"
+        rake "test:single"
+        ENV['TEST'] = nil
+      end
     end
+
+    "Completed"
   end
 
   def generate(argv = nil)
@@ -93,7 +96,15 @@ Description:
 EOT
     end
 
-  
+    def forking
+      pid = Kernel.fork do
+        yield
+        Kernel.exit
+      end
+      Process.wait pid
+    end
+
+
     def generator(name, argv = nil)
       if argv.nil?
         # FIXME: I don't know why we can't just catch SystemExit here, then we wouldn't need this if block
