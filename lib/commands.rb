@@ -19,10 +19,8 @@ class Commands
   
   def rake(task = nil, *args)
     task.nil? ? print_rake_tasks : invoke_rake_task(task, *args)
-
     "Completed"
-  rescue SystemExit
-    # Swallow exit/abort calls as we'll never want to exit the IRB session
+  rescue SystemExit, RuntimeError
     "Failed"
   end
 
@@ -30,9 +28,14 @@ class Commands
   # Also need to toggle the environment to test and back to dev after running.
   def test(what = nil)
     case what
-    when NilClass, :all
-      rake "test:units"
-    when String
+    when NilClass
+      print_test_usage
+      "Completed"
+    when "all"
+      rake "test"
+    when /^[^\/]+$/ # models
+      rake "test:#{what}"
+    when /[\/]+/ # models/person
       ENV['TEST'] = "test/#{what}_test.rb"
       rake "test:single"
       ENV['TEST'] = nil
@@ -54,7 +57,7 @@ class Commands
   
   private
     def load_rake_tasks
-      Rake::TaskManager.record_task_metadata = true # needed to capture 
+      Rake::TaskManager.record_task_metadata = true # needed to capture comments from define_task
       load Rails.root.join('Rakefile')
     end
     
@@ -72,6 +75,22 @@ class Commands
     def invoke_rake_task(task, *args)
       silence_active_record_logger { Rake::Task[task].invoke(*args) }
       Rake.application.tasks.each(&:reenable) # Rake by default only allows tasks to be run once per session
+    end
+
+
+    def print_test_usage
+      puts <<-EOT
+Usage:
+  test "WHAT"
+
+Description:
+    Runs either a full set of test suites or single suite.
+    
+    If you supply WHAT with either models, controllers, helpers, integration, or performance,
+    those whole sets will be run.
+    
+    If you supply WHAT with models/person, just test/models/person_test.rb will be run.
+EOT
     end
 
   
