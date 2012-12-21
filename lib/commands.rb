@@ -7,8 +7,6 @@ class Commands
       @commands ||= Commands.new
     end
     
-    alias_method :c, :commands
-    
     delegate :rake, :test, :generate, :destroy, :update, to: :commands
   end
 
