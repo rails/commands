@@ -1,4 +1,4 @@
 require 'rails/console/app'
-require 'commands/console_delegation'
+require 'rails/commands/console_delegation'
 
-Rails::ConsoleMethods.send :include, Commands::ConsoleDelegation
+Rails::ConsoleMethods.send :include, Rails::Commands::ConsoleDelegation
