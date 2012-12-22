@@ -23,3 +23,5 @@ When your console boots, it'll automatically have a `commander` object instantia
     > generate "scaffold post title:string"
     > rake "db:migrate"
     > test "models/person"
+
+You can see the options available for all the commands by running them with no parameters.
