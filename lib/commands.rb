@@ -1,4 +1,3 @@
-require 'rails/console/app'
-require 'commands/console_delegation'
-
-Rails::ConsoleMethods.send :include, Commands::ConsoleDelegation
+require 'rails/console/generator'
+require 'rails/console/raker'
+require 'rails/console/tester'
