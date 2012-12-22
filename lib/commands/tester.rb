@@ -1,7 +1,5 @@
 module Commands
   class Tester
-    # FIXME: Turn this into calls directly to the test classes, so we don't have to load environment again.
-    # Also need to toggle the environment to test and back to dev after running.
     def test(what = nil)
       case what
       when NilClass
@@ -20,7 +18,6 @@ module Commands
 
 
     private
-      # Executes the tests matching the passed filename globs
       def run(*test_patterns)
         forking do
           switch_env_to :test
