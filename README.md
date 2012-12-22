@@ -18,14 +18,8 @@ And then execute:
 Usage
 -----
 
-When your console boots, it'll automatically have a `commands` object instantiated. The following methods are delegated to this object: rake, test, generate, destroy, update. It's used like this:
+When your console boots, it'll automatically have a `commander` object instantiated. The following methods are delegated to this object: rake, test, generate, destroy, update. It's used like this:
 
     > generate "scaffold post title:string"
     > rake "db:migrate"
     > test "models/person"
-
-
-Work needed
------------
-
-1. The test runner needs to run in the same process, not use Rake (as it shells out). So the test class needs to be instantiated directly and run under the test environment.
