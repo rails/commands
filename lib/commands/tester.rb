@@ -7,8 +7,7 @@ module Commands
       when NilClass
         print_test_usage
       when "all"
-        # test/**/*_test.rb doesn't work because of performance tests
-        run "test/models/**/*_test.rb", "test/controllers/**/*_test.rb", "test/integration/**/*_test.rb"
+        run "test/**/**/*_test.rb"
       when /^[^\/]+$/ # models
         run "test/#{what}/**/*_test.rb"
       when /[\/]+/ # models/person
