@@ -1,4 +1,4 @@
-require 'commands/environment'
+require 'commands/test_environment'
 
 module Commands
   class Tester
@@ -21,7 +21,7 @@ module Commands
 
     private
       def run(*test_patterns)
-        Environment.fork_into :test do
+        TestEnvironment.fork do
           test_patterns.each do |test_pattern|
             Dir[test_pattern].each do |path|
               require File.expand_path(path)
