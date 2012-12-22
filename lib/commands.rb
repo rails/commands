@@ -6,17 +6,17 @@ class Commands
     def commands
       @commands ||= Commands.new
     end
-    
+
     delegate :rake, :test, :generate, :destroy, :update, to: :commands
   end
 
   include Rake::DSL
-  
+
   def initialize
     load_rake_tasks
     load_rails_generators
   end
-  
+
   def rake(task = nil, *args)
     task.nil? ? print_rake_tasks : invoke_rake_task(task, *args)
     "Completed"
@@ -32,32 +32,56 @@ class Commands
       when NilClass
         print_test_usage
       when "all"
-        rake "test"
+        # test/**/*_test.rb doesn't work because of performance tests
+        execute_tests("test/unit/**/*_test.rb", 
+            "test/functional/**/*_test.rb", "test/integration/**/*_test.rb")
       when /^[^\/]+$/ # models
-        rake "test:#{what}"
+        execute_tests("test/#{what}/**/*_test.rb")
       when /[\/]+/ # models/person
-        ENV['TEST'] = "test/#{what}_test.rb"
-        rake "test:single"
-        ENV['TEST'] = nil
+        execute_tests("test/#{what}_test.rb")
       end
+
+      Process.waitall
     end
 
     "Completed"
   end
 
+  # Executes the tests matching the passed filename globs
+  def execute_tests(*test_patterns)
+    Rails.env = "test"
+    Rails.application
+
+    $:.unshift("./test")
+
+    if defined? ::ActiveRecord
+      ::ActiveRecord::Base.clear_active_connections!
+      ::ActiveRecord::Base.establish_connection
+    end
+
+    # load the test files
+    test_patterns.each do |test_pattern|
+      Dir[test_pattern].each do |path|
+        require File.expand_path(path)
+      end
+    end
+
+    MiniTest::Unit.runner.run
+  end
+
   def generate(argv = nil)
     generator :generate, argv
   end
-  
+
   def update(argv = nil)
     generator :update, argv
   end
-  
+
   def destroy(argv = nil)
     generator :destroy, argv
   end
-  
-  
+
+
   private
     def load_rake_tasks
       Rake::TaskManager.record_task_metadata = true # needed to capture comments from define_task
