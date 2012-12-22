@@ -120,6 +120,8 @@ EOT
     
     # Only just ensured that this method is available in rails/master, so need a guard for a bit.
     def silence_active_record_logger
+      return yield unless defined? ActiveRecord::Base.logger
+
       begin
         old_logger_level, ActiveRecord::Base.logger.level = ActiveRecord::Base.logger.level, Logger::ERROR
         yield
