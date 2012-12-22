@@ -11,8 +11,8 @@ module Commands
     def rake(task = nil, *args)
       task.nil? ? print_rake_tasks : invoke_rake_task(task, *args)
       "Completed"
-    rescue SystemExit, RuntimeError
-      "Failed"
+    rescue SystemExit, RuntimeError => e
+      "Failed: #{e.message}"
     end
     
     
