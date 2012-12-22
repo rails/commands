@@ -29,7 +29,7 @@ module Commands
       end
 
       def invoke_rake_task(task, *args)
-        Commander.silence_active_record_logger { Rake::Task[task].invoke(*args) }
+        Rake::Task[task].invoke(*args)
         Rake.application.tasks.each(&:reenable) # Rake by default only allows tasks to be run once per session
       end
   end

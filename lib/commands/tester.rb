@@ -1,3 +1,5 @@
+require 'commands/environment'
+
 module Commands
   class Tester
     def test(what = nil)
@@ -19,45 +21,13 @@ module Commands
 
     private
       def run(*test_patterns)
-        forking do
-          switch_env_to :test
-          redirect_active_record_logger
-          require_test_files(test_patterns)
+        Environment.fork_into :test do
+          test_patterns.each do |test_pattern|
+            Dir[test_pattern].each do |path|
+              require File.expand_path(path)
+            end
+          end        
         end
-      end
-
-      def switch_env_to(new_env)
-        Rails.env = new_env.to_s
-        Rails.application
-
-        $:.unshift("./#{new_env}")
-        
-        reset_active_record
-      end
-
-      def reset_active_record
-        if defined? ::ActiveRecord
-          ::ActiveRecord::Base.clear_active_connections!
-          ::ActiveRecord::Base.establish_connection
-        end
-      end
-
-      def require_test_files(test_patterns)
-        # load the test files
-        test_patterns.each do |test_pattern|
-          Dir[test_pattern].each do |path|
-            require File.expand_path(path)
-          end
-        end        
-      end
-
-      def forking
-        Kernel.fork do
-          yield
-          Kernel.exit
-        end
-
-        Process.waitall
       end
 
       def print_test_usage
