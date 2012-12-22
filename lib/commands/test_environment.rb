@@ -48,6 +48,7 @@ module Commands
           ActiveRecord::Base.establish_connection
         end
       end
+
       
       def add_test_dir_to_load_path
         $:.unshift("./test")
