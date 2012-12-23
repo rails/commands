@@ -28,8 +28,8 @@ module Rails
           ENV['RAILS_ENV'] = Rails.env = "test"
 
           Kernel.silence_warnings do
-            Dir[Rails.root.join('config', 'initializers', '*.rb')].map { |file| load file }
             load Rails.root.join('config', 'environments', "test.rb")
+            Dir[Rails.root.join('config', 'initializers', '*.rb')].map { |file| load file }
           end
         end
     

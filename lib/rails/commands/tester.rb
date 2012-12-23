@@ -27,6 +27,16 @@ module Rails
                 require File.expand_path(path)
               end
             end        
+
+            trigger_runner
+          end
+        end
+
+        def trigger_runner
+          if defined?(Test::Unit::TestCase) && ActiveSupport::TestCase.ancestors.include?(Test::Unit::TestCase)
+            MiniTest::Unit.runner.run
+          else
+            # MiniTest::Spec setups in Rails 4.0+ has autorun defined
           end
         end
 
