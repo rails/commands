@@ -7,7 +7,16 @@ module Rails
         @commander ||= Commander.new
       end
 
-      delegate :rake, :test, :generate, :destroy, :update, to: :commander
+      def test(*args)
+        if Rails.env.test?
+          commander.test(*args)
+        else
+          puts "You can only run tests in a console started in the test environment. " +
+               "Use `./script/rails console test` to start such a console"
+        end
+      end
+
+      delegate :rake, :generate, :destroy, :update, to: :commander
     end
   end
 end
