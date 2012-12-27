@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.email   = 'david@37signals.com'
   s.summary = 'Run Rake/Rails commands through the console'
 
-  s.add_dependency 'rails', '>= 3.0.0'
+  s.add_dependency 'rails', '>= 3.2.0'
 
   s.files = Dir["#{File.dirname(__FILE__)}/**/*"]
 end
