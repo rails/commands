@@ -7,9 +7,11 @@ Run Rake and Rails commands during a development console session and run tests d
 Installation
 ------------
 
-Add this line to your application's Gemfile:
+Add this line to development group in your application's Gemfile:
 
-    gem 'commands'
+    group :development do
+      gem 'commands'
+    end
 
 And then execute:
 
